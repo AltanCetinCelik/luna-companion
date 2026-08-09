@@ -16,7 +16,7 @@ interface WelcomeStageProps {
 /**
  * The return experience — Luna noticing the visitor.
  *
- * First ever visit:   "Merhaba... 👀 / Sen kimsin? / Ben LUNA. / Sanırım seni
+ * First ever visit:   "Merhaba... 👀 / Sen kimsin? / Ben AYBİKE. / Sanırım seni
  *                     bekliyordum." → [ TANIŞALIM ♥ ]
  * Return visits:      time-aware + remembers what they did → [ DEVAM ET ]
  * Rare special moment: the screen dims, "… Özledim seni. Hoş geldin. ♥"

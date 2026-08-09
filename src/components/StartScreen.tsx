@@ -13,7 +13,7 @@ interface StartScreenProps {
 
 /**
  * The packaging: a tiny retro toy-box product screen.
- * "✦ LUNA ✦ / SANAL ARKADAŞ / [ BAŞLA ] / Sürüm 1.0"
+ * "✦ AYBİKE ✦ / SANAL ARKADAŞ / [ BAŞLA ] / Sürüm 1.0"
  * Sürüm 1.0 yalan. Blurb bunu biliyor.
  */
 export function StartScreen({ onStart }: StartScreenProps) {

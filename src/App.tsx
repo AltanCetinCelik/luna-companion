@@ -94,7 +94,7 @@ function Shell() {
     document.title = `${friendProfile.product.title} ♥`
   }, [])
 
-  // Secret: type "luna" anywhere with the keyboard.
+  // Secret: type her name anywhere with the keyboard.
   useEffect(() => {
     let typed = ''
     const onKey = (e: KeyboardEvent) => {

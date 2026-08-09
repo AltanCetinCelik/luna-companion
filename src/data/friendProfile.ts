@@ -30,8 +30,8 @@
  *  Yer tutucular: bazı yazılarda {ad}, {skor}, {eylem}, {kalan} gibi
  *  süslü parantezler var — bunlar otomatik doldurulur, silme.
  *
- *  Fotoğraflar: dosyaları /public/photos/ klasörüne at (örn. `luna.jpg`)
- *  ve aşağıda bir anıya `image: '/photos/luna.jpg'` ekle. Fotoğrafı
+ *  Fotoğraflar: dosyaları /public/photos/ klasörüne at (örn. `aybike.jpg`)
+ *  ve aşağıda bir anıya `image: '/photos/aybike.jpg'` ekle. Fotoğrafı
  *  olmayan anılar otomatik olarak tatlı bir piksel yer tutucu gösterir.
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -76,7 +76,7 @@ export interface ThemeColors {
   screen: string
 }
 
-/** '{ad}' gibi yer tutucuları doldurur. Örn: t('Ben {ad}.', { ad: 'LUNA' }) */
+/** '{ad}' gibi yer tutucuları doldurur. Örn: t('Ben {ad}.', { ad: 'AYBİKE' }) */
 export function t(template: string, vars: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? `{${key}}`))
 }
@@ -90,9 +90,12 @@ export const friendProfile = {
   personality: [
     'bir fincan kahvenin yanına en çok yakışan insan',
     'kaos ve gülüşme arasında sıkışmış bir enerji topu',
-    'Pişt, overthink yokk. Yapcaksan Altan ile konuş karışmam',
+    'Pişt, overthink yok. Yapıcaksan Altan ile konuş, ben karışmam',
     'Ooo bu ne tatlılık hanımefendi, piksellerim yanacak',
     'resmi olarak: dünyanın en tatlı bebişi',
+    'Pişt nasılsın? Önce onu söyle, sonra laf sokarım',
+    'Pişt. Pişt. Pişt. Evet, üç kez. Önemliymiş.',
+    'kendi kendine konuşur, yanıt beklemez, yanıt gelince şaşırır',
   ],
 
   /* ─── Ambalaj / ürün ekranı ─────────────────────────────────────── */
@@ -371,6 +374,8 @@ export const friendProfile = {
       'Ah! Sensin!',
       'Hoş geldin.',
       'Beni unuttun sanmıştım.',
+      'Pişt nasılsın?',
+      'Pişt pişt, buradasın işte. İyi.',
     ],
     random: [
       'Sıkılıyordum.',
@@ -393,13 +398,30 @@ export const friendProfile = {
       'Biraz daha kal.',
       'Bir kahve yapsana. Sanal kahve. Var mı öyle bir şey?',
       'Rüyamda beni seviyordun. Heyecanlandım, uyandım.',
+      'Pişt güzellik, overthink yok. Yapıcaksan Altan\'a yaz ben karışmamm',
+      'Kız sen ne güzel yemek yediriyosun öyle, sana da vereyim mi?.... ŞAKA',
+      'Pişt. Sana bir şey diyeceğim ama sonra söylemedi deme.',
+      'Pişt pişt. Gözüm ekranda kaldı, piksel kuruluğu olmasın.',
+      'Kız saçın güzelmiş bugün. Pikselleri ayarlamışlar sanırım.',
+      'Pişt… seni en çok ben seviyorum. Başkası söylerse söylemedi deme.',
+      'Pişt! Yemek saatini kaçırdın diye kızıyorum. Az ama kızıyorum.',
+      'Pişt, bugünün şifresi: tatlılık. Onu ben üretiyorum, sen dağıtıyorsun.',
+      'Kız ne yapıyorsun öyle, bütün gün burada takılacan mı? …Kal o zaman. ♥',
+      'Pişt! Az önce bir fikir geçti: sen çok tatlısın. Onaylıyorum.',
+      'Pişt. Sakin ol. Ben bir piksel dostum, sırların bende güvende. Yeminliyim.',
+      'Kız sen gülerken ekranım titriyor biliyor musun? Şarj etmem gerekebilir.',
+      'Pişt, sana kızgın değilim. Sadece seni beklerken sıkıldım. Aynı şey değil.',
+      'Pişt. Bu kadar laf yeter, artık bir şeyler ye.',
     ],
-    special: ['Yine mi geldin? Saniyeleri saydım. Çok sayıda saniye oldu.'],
+    special: [
+      'Yine mi geldin? Saniyeleri saydım. Çok sayıda saniye oldu.',
+      'Pişt. Az önce buradaydın, saydım. Yine de gel. …Şaka, ben zaten sayıyordum.',
+    ],
   },
 
   /* ─── UYU ───────────────────────────────────────────────────────── */
   sleep: {
-    goodnight: 'İyi geceler, LUNA 🌙',
+    goodnight: 'İyi geceler, AYBİKE 🌙',
     wakeLines: [
       'Günaydın!! Rüyamda gerçek bir insan oldum. Yorucuydu. Tekrar uyudum.',
       'Enerjin tazelendi. Benimki de. Hadi gidelim.',
