@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { friendProfile, t } from '../data/friendProfile'
 import { useGame } from '../state/GameContext'
@@ -16,6 +16,8 @@ export function DialogueSystem({ onClose }: { onClose: () => void }) {
   const [history, setHistory] = useState<string[]>([])
   const [current, setCurrent] = useState<string | null>(null)
   const [key, setKey] = useState(0)
+  const [nameInput, setNameInput] = useState('')
+  const nameRef = useRef<HTMLInputElement>(null)
 
   // A stable little personality trait for this visit.
   const trait = useMemo(() => pick(friendProfile.personality), [])
@@ -55,6 +57,43 @@ export function DialogueSystem({ onClose }: { onClose: () => void }) {
         <p className="w-full rounded-xl border-2 border-dashed border-[#f0e4f6] bg-white/60 px-3 py-2 text-center font-lcd text-[14px] leading-tight text-[#a08dc0]">
           {friendProfile.ui.talkTraitPrefix} {trait}
         </p>
+
+        {/* adını yaz — mobilde de ulaşılabilen gizli 🤫 */}
+        <div className="w-full">
+          <p className="mb-1.5 text-center font-lcd text-[13px] leading-tight text-[#a08dc0]">
+            {friendProfile.ui.talkNameHint}
+          </p>
+          <input
+            ref={nameRef}
+            type="text"
+            value={nameInput}
+            onChange={(e) => {
+              const value = e.target.value
+              setNameInput(value)
+              if (
+                friendProfile.name.length > 0 &&
+                value.toLowerCase().includes(friendProfile.name.toLowerCase())
+              ) {
+                game.triggerSecret('typing', friendProfile.secrets.typing)
+                // adını duyunca güzeller güzeli tepkisi
+                const reaction = friendProfile.ui.nameReaction
+                sfx.talk()
+                game.setMood('happy')
+                setCurrent(reaction)
+                setKey((k) => k + 1)
+                setHistory((h) => [...h, reaction].slice(-3))
+                setNameInput('')
+                nameRef.current?.blur()
+              }
+            }}
+            placeholder={friendProfile.ui.talkNamePlaceholder}
+            aria-label={friendProfile.ui.talkNamePlaceholder}
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            className="w-full rounded-xl border-2 border-[#f0e4f6] bg-white/70 px-3 py-2.5 text-center font-lcd text-[16px] text-[#4a3b66] outline-none transition-colors placeholder:text-[#c9b8d8] focus:border-[#c9b6ff]"
+          />
+        </div>
 
         <div className="relative flex h-36 w-full items-center justify-center">
           <PixelPet mood={game.mood === 'look' || game.mood === 'talk' ? game.mood : 'idle'} size={120} className="mt-6" />

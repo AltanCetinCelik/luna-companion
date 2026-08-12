@@ -17,7 +17,15 @@ export type PetMood =
   | 'embarrassed'
   | 'look'
 
-export type EggId = 'petSpam' | 'heartClick' | 'code' | 'longPress' | 'starClick' | 'version' | 'typing'
+export type EggId =
+  | 'petSpam'
+  | 'heartClick'
+  | 'code'
+  | 'longPress'
+  | 'starClick'
+  | 'version'
+  | 'typing'
+  | 'story'
 
 export const ALL_EGGS: EggId[] = [
   'petSpam',
@@ -27,6 +35,7 @@ export const ALL_EGGS: EggId[] = [
   'starClick',
   'version',
   'typing',
+  'story',
 ]
 
 export interface SpeechEvent {

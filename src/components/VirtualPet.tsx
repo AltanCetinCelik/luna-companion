@@ -6,12 +6,14 @@ import { sfx, unlockAudio } from '../utils/sfx'
 import { ActionButton } from './ActionButton'
 import type { ActionId } from './ActionButton'
 import { DialogueSystem } from './DialogueSystem'
+import { EmergencyPanel } from './EmergencyPanel'
 import { FeedInteraction } from './FeedInteraction'
 import { LoveMessages } from './LoveMessages'
 import { Memories } from './Memories'
 import { MiniGame } from './MiniGame'
 import { PetScreen } from './PetScreen'
 import { PetStats } from './PetStats'
+import { StoryPlayer } from './StoryPlayer'
 
 type PanelId = 'feed' | 'play' | 'love' | 'memories' | 'talk' | null
 
@@ -25,6 +27,8 @@ const SECRET_CODE = ['feed', 'play', 'love', 'talk', 'sleep'] as const
 export function VirtualPet() {
   const game = useGame()
   const [panel, setPanel] = useState<PanelId>(null)
+  const [storyOpen, setStoryOpen] = useState(false)
+  const [emergencyOpen, setEmergencyOpen] = useState(false)
 
   const gameRef = useRef(game)
   gameRef.current = game
@@ -199,9 +203,23 @@ export function VirtualPet() {
         onHeartTap={handleHeartTap}
         onStarTap={handleStarTap}
         onWake={wake}
+        onStoryTap={() => setStoryOpen(true)}
       />
 
       <PetStats />
+
+      {/* acil mod — canı sıkılınca seni arasın 😤 */}
+      <button
+        type="button"
+        onClick={() => {
+          unlockAudio()
+          sfx.click()
+          setEmergencyOpen(true)
+        }}
+        className="font-lcd w-full max-w-[390px] cursor-pointer rounded-2xl border-2 border-dashed border-[#9fc7e8] bg-white/60 px-4 py-3 text-[15px] leading-tight text-[#6b8fb5] transition-all hover:bg-white active:scale-[0.98]"
+      >
+        😫 {friendProfile.emergency.buttonLabel}
+      </button>
 
       {/* action pad */}
       <div className="grid w-full max-w-[390px] grid-cols-3 gap-2.5 sm:gap-3">
@@ -223,6 +241,8 @@ export function VirtualPet() {
         {panel === 'love' && <LoveMessages key="love" onClose={closePanel} />}
         {panel === 'memories' && <Memories key="memories" onClose={closePanel} />}
         {panel === 'talk' && <DialogueSystem key="talk" onClose={closePanel} />}
+        {storyOpen && <StoryPlayer key="story" onClose={() => setStoryOpen(false)} />}
+        {emergencyOpen && <EmergencyPanel key="emergency" onClose={() => setEmergencyOpen(false)} />}
       </AnimatePresence>
     </motion.div>
   )

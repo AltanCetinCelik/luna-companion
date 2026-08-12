@@ -17,8 +17,7 @@ interface StartScreenProps {
  * Sürüm 1.0 yalan. Blurb bunu biliyor.
  */
 export function StartScreen({ onStart }: StartScreenProps) {
-  const { triggerSecret, save } = useGame()
-  const [versionClicks, setVersionClicks] = useState(0)
+  const { save } = useGame()
   const [booting, setBooting] = useState(false)
   const bootTimer = useRef<number | null>(null)
 
@@ -28,16 +27,6 @@ export function StartScreen({ onStart }: StartScreenProps) {
     },
     [],
   )
-
-  const handleVersionClick = () => {
-    const n = versionClicks + 1
-    setVersionClicks(n)
-    sfx.talk()
-    if (n >= 3) {
-      triggerSecret('version', friendProfile.secrets.version)
-      setVersionClicks(0)
-    }
-  }
 
   const handleStart = () => {
     unlockAudio()
@@ -184,16 +173,11 @@ export function StartScreen({ onStart }: StartScreenProps) {
           </motion.button>
         </div>
 
-        {/* version (clickable, obviously) */}
+        {/* version — artık gizli değil, ana ekranda sürüm başlığında */}
         <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={handleVersionClick}
-            className="cursor-pointer rounded-lg px-2 py-1 font-pixel text-[9px] text-[#b39ac4] transition-colors hover:bg-white/70 hover:text-[#7a649d]"
-            title={friendProfile.ui.versionTitle}
-          >
+          <span className="font-pixel rounded-lg px-2 py-1 text-[9px] text-[#b39ac4]">
             {friendProfile.product.version}
-          </button>
+          </span>
         </div>
 
         {/* fake barcode + fine print */}

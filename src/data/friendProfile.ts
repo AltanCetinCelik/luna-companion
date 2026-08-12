@@ -24,6 +24,8 @@
  *  ─ dialogue ................ KONUŞ diyalogları (dilediğin kadar ekle)
  *  ─ sleep ................... UYU mesajları
  *  ─ memories ................ ANILAR (fotoğraf + başlık + açıklama)
+ *  ─ story ................... GİZLİ HİKÂYE: İLK SAYFA (5 sesli bölüm,
+ *                              bölüm başlıkları, oynatıcı yazıları, bitiş)
  *  ─ stats ................... başlangıç istatistikleri
  *  ─ secrets ................. gizli şeyler / easter egg mesajları
  *
@@ -247,6 +249,7 @@ export const friendProfile = {
     secretPixelAria: 'kesinlikle yıldız olan minicik piksel',
     secretPixelTitle: '?',
     petAlt: 'çok tatlı bir piksel arkadaş',
+    heartsStoryAria: 'beş küçük kalp — altlarında bir sır gizli olabilir',
 
     // VirtualPet — konuşma baloncukları ve yüzen bildirimler
     sleepBubble: 'zızz…',
@@ -289,6 +292,11 @@ export const friendProfile = {
     talkWaiting: '…selam demeni bekliyor',
     talkCount: 'şimdiye kadar {sayi} sohbet',
     talkBullet: '♡',
+    // Mobilde de çalışan gizli: adını yazınca bir şeyler olur 🤫
+    talkNameHint: 'adını buraya yaz… bir şeyler olabilir 🤫',
+    talkNamePlaceholder: 'adın…',
+    // Adını yazınca verdiği tepki
+    nameReaction: 'AAA benim güzel hanımefendim',
 
     // WelcomeStage — karşılama sahnesi
     welcomeTapHint: 'dokunarak hızlandır',
@@ -429,6 +437,54 @@ export const friendProfile = {
     ],
   },
 
+  /* ─── GİZLİ HİKÂYE: İLK SAYFA ───────────────────────────────────── */
+  /*
+   * Sesli, 5 bölümlük gizli bir hikâye (easter egg). Kitap ana ekranda
+   * görünmez — önce gizliyi bulmak gerekir: ekrandaki beş küçük kalbe
+   * 3 kez dokun → kitap köşede belirir (tekrar dinlemek + final kapağı).
+   * Bölümler sırayla açılır: bir bölümü sonuna kadar dinleyince sonraki açılır.
+   * Tamamlanan bölümler tekrar dinlenebilir. Ses dosyaları /public/audio/.
+   */
+  story: {
+    entryAria: 'gizli bir kitap — ilk sayfa hikâyesi',
+    entryTitle: 'ilk sayfa',
+    // Açılış kartı
+    revealNumber: 'GİZLİ #8',
+    revealTitle: 'İLK SAYFA',
+    revealTagline: 'Her şey kötü bir kahveyle başladı.',
+    revealCta: 'HİKÂYEYİ AÇ',
+    // Hikâye ekranı
+    date: '08.08.26',
+    title: 'İLK SAYFA',
+    tagline: 'Her şey kötü bir kahveyle başladı.',
+    chapterLabel: 'BÖLÜM',
+    chapters: [
+      { id: '01', title: 'KÖTÜ BİR KAHVE', file: '/audio/ilk-sayfa-01.m4a' },
+      { id: '02', title: 'ERTESİ GÜN', file: '/audio/ilk-sayfa-02.m4a' },
+      { id: '03', title: 'ARÇELİK', file: '/audio/ilk-sayfa-03.m4a' },
+      { id: '04', title: 'O BEN', file: '/audio/ilk-sayfa-04.m4a' },
+      { id: '05', title: 'İLK SAYFA', file: '/audio/ilk-sayfa-05.m4a' },
+    ],
+    // Oynatıcı
+    completedToast: 'Bölüm tamamlandı. ♥',
+    lockedMark: '🔒',
+    doneMark: '✓',
+    play: 'OYNAT',
+    pause: 'DURAKLAT',
+    prev: 'ÖNCEKİ',
+    next: 'SONRAKİ',
+    muteOff: 'sessiz',
+    muteOn: 'ses açık',
+    // Bitiş ekranı
+    endDate: '08.08.26',
+    endTitle: 'İlk sayfa.',
+    endText: 'Devamı henüz yazılmadı. ♥',
+    endPage: 'SAYFA 1 / ?',
+    backToChapters: 'BÖLÜMLERE DÖN',
+    close: 'KAPAT',
+    allDone: 'Hepsi dinlendi ♥',
+  },
+
   /* ─── ANILAR (küçük karalama defteri) ───────────────────────────── */
   memories: [
     {
@@ -481,6 +537,28 @@ export const friendProfile = {
     },
   ],
 
+  /* ─── ACİL MODU (canı sıkılınca seni arasın) ────────────────────── */
+  /*
+   * Aybike butona basınca telefonunun arama ekranı senin numaranla
+   * hazır açılır — yeşil tuşa basınca seni arar (kendi telefonundan).
+   *
+   *  ⚠️  ÖNEMLİ: tel ve whatsappNumber alanlarına KENDİ numaranı yaz!
+   *      Şu an placeholder var (+905000000000), unutma değiştirmeyi.
+   *      Format: tel '+90...' (ülke koduyla), whatsappNumber aynısı + 'sız.
+   */
+  emergency: {
+    buttonLabel: 'canım sıkkın, acil modumu düzelt',
+    title: 'ACİL MODU',
+    tel: '+905061471571', // ← SENİN NUMARAN (örn. '+905551234567')
+    whatsappNumber: '905061471571', // ← aynı numara, '+' olmadan (örn. '905551234567')
+    intro: 'Tamam tamam, mod acili. Beni ara, anında düzelirim. 😤',
+    callCta: 'HEMEN ARA',
+    waCta: "WHATSAPP'TAN YAZ",
+    waText: 'Selam! Acil mod açık, modumu düzelt 😤',
+    mobileHint: 'açılan ekranda yeşil tuşa basınca arama başlar 📞',
+    desktopHint: 'telefonundan açarsan bu buton seni direkt arar 📱',
+  },
+
   /* ─── Başlangıç istatistikleri ──────────────────────────────────── */
   stats: {
     happiness: 100,
@@ -507,6 +585,17 @@ export const friendProfile = {
     starClick: ['Gizli bir yıldız!', 'Pikselleri buldun.', 'O yıldızı kendisi sakladı.'],
     version: ['Aslında artık ∞.0 sürümü.', 'Sürüm 1.0 yalandı.'],
     typing: ['🎉 GİZLİ DOSTLUK SEVİYESİ AÇILDI 🎉', '...adını nasıl bildin?'],
+    // Beş küçük kalbe 3 kez dokununca açılır — kitabı bulduran ipucu
+    story: [
+      '📖 Bir yerlerde bir kitap varmış… seni bekliyor.',
+      'Bu hikâyeyi duymak ister misin? Köşeye bak. 📖',
+      'Bölümler açılmayı bekliyor. 📖',
+      'Her şey kötü bir kahveyle başladı… gerisini kitap anlatır. 📖',
+    ],
+    // Tüm gizliler (8/8) bulununca: ekran kararır, kalp havai fişekleri ve bu mesaj
+    allFound:
+      'Benim meraklı hanımefendim buldu mu her şeyii? Aferinn bitanemee ama gerçekteki altan özlemiştir senii',
+    allFoundCta: 'TAMAM ♥',
     secretFound: 'Gizli şey bulundu!',
   },
 }

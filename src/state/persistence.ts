@@ -56,15 +56,41 @@ export interface PetMemory {
   memoriesViewed: string[]
   highScore: number
   muted: boolean
+  /** Has the İLK SAYFA story been opened at least once? */
+  storyOpened: boolean
+  /** Chapters of the secret audio story that have been listened to to the end. */
+  completedStoryChapters: string[]
 }
 
 /** Keeping the original key lets v1 saves migrate forward automatically. */
 export const KEY = 'virtual-human-edition-v1'
-const SAVE_VERSION = 2
+const SAVE_VERSION = 3
+
+/**
+ * Refresh guard: once a visit has been counted for this browser session,
+ * a plain refresh (or tab reuse) must NOT count as a new visit. The marker
+ * lives in sessionStorage so a genuinely new session (browser reopened)
+ * starts a fresh visit counter — exactly the "Ziyaret #7 → #8" rule.
+ */
+const SESSION_KEY = 'virtual-human-edition-session'
+
+function isSameSession(): boolean {
+  try {
+    return sessionStorage.getItem(SESSION_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function markSession(): void {
+  try {
+    sessionStorage.setItem(SESSION_KEY, '1')
+  } catch {
+    /* private mode — visits fall back to the time-gap rule */
+  }
+}
 
 const ENERGY_PER_HOUR = 3
-/** Opens closer than this are the same visit (refresh, another tab). */
-export const NEW_VISIT_GAP_MS = 60_000
 
 const defaultStats: PetStats = { ...friendProfile.stats }
 const defaultCounts: PetCounts = { feeds: 0, plays: 0, talks: 0, loves: 0, sleeps: 0, memories: 0 }
@@ -87,6 +113,8 @@ function freshMemory(): PetMemory {
     memoriesViewed: [],
     highScore: 0,
     muted: false,
+    storyOpened: false,
+    completedStoryChapters: [],
   }
 }
 
@@ -127,6 +155,9 @@ function sanitize(raw: unknown): PetMemory {
     : []
   const recent = Array.isArray(p.recentActions)
     ? p.recentActions.filter((a): a is PetAction => ACTIONS.includes(a as PetAction)).slice(-3)
+    : []
+  const storyDone = Array.isArray(p.completedStoryChapters)
+    ? [...new Set(p.completedStoryChapters.filter((c): c is string => typeof c === 'string'))]
     : []
 
   // v1 → v2: the field used to be called `visits`.
@@ -173,6 +204,8 @@ function sanitize(raw: unknown): PetMemory {
     memoriesViewed: viewed,
     highScore: num(p.highScore, 0, 0, 1_000_000),
     muted: p.muted === true,
+    storyOpened: p.storyOpened === true,
+    completedStoryChapters: storyDone,
   }
 }
 
@@ -201,10 +234,15 @@ export function resetPetState(): PetMemory {
 }
 
 /**
- * Called once per page open. Counts a new visit if the last open was a while
- * ago, backdates nothing, and drains energy very gently (never punishing).
+ * Called once per page open. A brand-new browser session counts one visit;
+ * a plain refresh inside the same session does not (sessionStorage marker).
+ * Drains energy very gently on real gaps (never punishing).
  */
 export function recordVisit(s: PetMemory, now = Date.now()): PetMemory {
+  // Refresh / tab reuse inside the same session — not a new visit.
+  // (visitCount === 0 means a wiped save: always start the counter fresh.)
+  if (isSameSession() && s.visitCount > 0) return s
+
   const gapMs = s.lastVisit ? now - s.lastVisit : null
   let next: PetMemory = { ...s, stats: { ...s.stats }, lastGapMs: gapMs }
 
@@ -213,12 +251,10 @@ export function recordVisit(s: PetMemory, now = Date.now()): PetMemory {
     next.stats.energy = Math.max(20, Math.round(next.stats.energy - hours * ENERGY_PER_HOUR))
   }
 
-  const isNewVisit = gapMs === null || gapMs >= NEW_VISIT_GAP_MS
-  if (isNewVisit) {
-    next = { ...next, visitCount: next.visitCount + 1 }
-    if (next.firstVisit === null) next.firstVisit = now
-  }
+  next.visitCount = next.visitCount + 1
+  if (next.firstVisit === null) next.firstVisit = now
   next.lastVisit = now
+  markSession()
   return next
 }
 
@@ -241,6 +277,12 @@ export function recordMessage(s: PetMemory, text: string): PetMemory {
 export function unlockSecret(s: PetMemory, id: string): PetMemory {
   if (s.eggsFound.includes(id)) return s
   return { ...s, eggsFound: [...s.eggsFound, id] }
+}
+
+/** Mark an İLK SAYFA chapter as listened to the end (idempotent). */
+export function recordStoryChapter(s: PetMemory, chapterId: string): PetMemory {
+  if (s.completedStoryChapters.includes(chapterId)) return s
+  return { ...s, completedStoryChapters: [...s.completedStoryChapters, chapterId] }
 }
 
 export function markWelcomed(s: PetMemory): PetMemory {

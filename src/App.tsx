@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { SecretCelebration } from './components/EasterEggs'
+import { AllSecretsCelebration, SecretCelebration } from './components/EasterEggs'
 import { FloatingBackground } from './components/FloatingBackground'
 import { ResetConfirm } from './components/ResetConfirm'
 import { StartScreen } from './components/StartScreen'
@@ -27,6 +27,25 @@ function applyTheme(): void {
 function Header() {
   const game = useGame()
   const [confirmReset, setConfirmReset] = useState(false)
+  const [versionTaps, setVersionTaps] = useState(0)
+  const versionTapTimer = useRef<number | null>(null)
+
+  // Gizliler yalnızca ana ekrandayken çalışır — karşılama/giriş ekranında değil.
+  const petActive = game.save.started && game.save.welcomedVisit >= game.save.visitCount
+
+  // "Sürüm 1.0" gizlisi artık burada: başlığa 3 kez dokun (sadece ana ekranda).
+  const handleTitleTap = () => {
+    if (!petActive) return
+    sfx.talk()
+    const n = versionTaps + 1
+    setVersionTaps(n)
+    if (versionTapTimer.current) clearTimeout(versionTapTimer.current)
+    versionTapTimer.current = window.setTimeout(() => setVersionTaps(0), 2600)
+    if (n >= 3) {
+      setVersionTaps(0)
+      game.triggerSecret('version', friendProfile.secrets.version)
+    }
+  }
 
   return (
     <header className="relative z-10 mx-auto flex w-full max-w-md items-center justify-between gap-2 px-4 pt-4">
@@ -44,13 +63,17 @@ function Header() {
         {game.muted ? '🔇' : '🔊'}
       </button>
 
-      <motion.p
-        className="font-pixel text-[9px] tracking-wider text-[#a08dc0] sm:text-[10px]"
+      <motion.button
+        type="button"
+        onClick={handleTitleTap}
+        className="font-pixel cursor-pointer text-[9px] tracking-wider text-[#a08dc0] transition-colors hover:text-[#7a649d] sm:text-[10px]"
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 3, repeat: Infinity }}
+        title={friendProfile.ui.versionTitle}
+        aria-label={friendProfile.ui.versionTitle}
       >
         {friendProfile.product.title}
-      </motion.p>
+      </motion.button>
 
       <div className="flex items-center gap-2">
         <span className="font-pixel rounded-full border-2 border-white/80 bg-white/60 px-2.5 py-1.5 text-[8px] text-[#8a75a8] sm:text-[9px]">
@@ -94,16 +117,27 @@ function Shell() {
     document.title = `${friendProfile.product.title} ♥`
   }, [])
 
-  // Secret: type her name anywhere with the keyboard.
+  // Secret: type her name anywhere with the keyboard (desktop).
+  // Inputs are excluded — typing in the KONUŞ name box has its own handler
+  // (which is the mobile-friendly path). Also only fires on the pet screen,
+  // never on the start screen.
+  const petActiveRef = useRef(false)
+  petActiveRef.current = game.save.started && game.save.welcomedVisit >= game.save.visitCount
+
   useEffect(() => {
     let typed = ''
     const onKey = (e: KeyboardEvent) => {
+      if (!petActiveRef.current) return
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       typed = (typed + e.key.toLowerCase()).slice(-6)
-      if (friendProfile.name.length > 0 && typed.endsWith(friendProfile.name.toLowerCase())) {
-        typed = ''
-        game.triggerSecret('typing', friendProfile.secrets.typing)
-      }
+    if (friendProfile.name.length > 0 && typed.endsWith(friendProfile.name.toLowerCase())) {
+      typed = ''
+      game.triggerSecret('typing', friendProfile.secrets.typing)
+      // adını duyunca güzeller güzeli tepkisi
+      game.setMood('happy')
+      game.say(friendProfile.ui.nameReaction, 4200)
+    }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -148,6 +182,7 @@ function Shell() {
       </footer>
 
       <SecretCelebration />
+      <AllSecretsCelebration />
 
       <AnimatePresence>
         {welcomePending && <WelcomeStage key={`welcome-${game.save.visitCount}`} onDone={finishWelcome} />}

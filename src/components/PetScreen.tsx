@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { friendProfile } from '../data/friendProfile'
 import { heartMap } from '../pixelart'
 import { useGame } from '../state/GameContext'
+import { sfx } from '../utils/sfx'
 import { PixelArt } from './PixelArt'
 import { PixelPet } from './PixelPet'
 import { SleepOverlay } from './SleepOverlay'
@@ -14,6 +15,7 @@ interface PetScreenProps {
   onHeartTap: () => void
   onStarTap: () => void
   onWake: () => void
+  onStoryTap: () => void
 }
 
 /**
@@ -21,12 +23,34 @@ interface PetScreenProps {
  * CRT scanlines + pixel grid + vignette + glow, a speech bubble,
  * five little hearts, and a few very small secrets inside.
  */
-export function PetScreen({ onPetTap, onPetLongPress, onHeartTap, onStarTap, onWake }: PetScreenProps) {
-  const { mood, speech, save, floaties } = useGame()
+export function PetScreen({
+  onPetTap,
+  onPetLongPress,
+  onHeartTap,
+  onStarTap,
+  onWake,
+  onStoryTap,
+}: PetScreenProps) {
+  const { mood, speech, save, floaties, triggerSecret } = useGame()
   const [heartPulse, setHeartPulse] = useState(0)
   const [glowKey, setGlowKey] = useState(0)
+  const [storyTaps, setStoryTaps] = useState(0)
   const longPressTimer = useRef<number | null>(null)
+  const storyTapTimer = useRef<number | null>(null)
   const feeds = save.counts.feeds
+
+  // Beş küçük kalp → 3 dokunuş → gizli kitap (İLK SAYFA hikâyesi) açılır.
+  const handleStoryFind = () => {
+    sfx.pop()
+    const n = storyTaps + 1
+    setStoryTaps(n)
+    if (storyTapTimer.current) clearTimeout(storyTapTimer.current)
+    storyTapTimer.current = window.setTimeout(() => setStoryTaps(0), 2600)
+    if (n >= 3) {
+      setStoryTaps(0)
+      triggerSecret('story', friendProfile.secrets.story)
+    }
+  }
 
   // Tiny hearts pulse every time she gets fed.
   useEffect(() => {
@@ -169,8 +193,14 @@ export function PetScreen({ onPetTap, onPetLongPress, onHeartTap, onStarTap, onW
                 ))}
               </div>
 
-              {/* the five little hearts */}
-              <div className="mt-1 flex items-center justify-center gap-2" aria-hidden>
+              {/* beş küçük kalp — 3 dokunuş gizli kitabı açar (İLK SAYFA) */}
+              <button
+                type="button"
+                onClick={handleStoryFind}
+                className="mt-1 flex cursor-pointer items-center justify-center gap-2"
+                aria-label={friendProfile.ui.heartsStoryAria}
+                title={friendProfile.ui.heartsStoryAria}
+              >
                 {Array.from({ length: friendProfile.heartsRow }).map((_, i) => (
                   <motion.div
                     key={`${heartPulse}-${i}`}
@@ -182,7 +212,7 @@ export function PetScreen({ onPetTap, onPetLongPress, onHeartTap, onStarTap, onW
                     <PixelArt map={heartMap} pixel={1} className="w-4 sm:w-5" />
                   </motion.div>
                 ))}
-              </div>
+              </button>
             </div>
 
             {/* the secret pixel — a tiny dot in the corner */}
@@ -193,6 +223,21 @@ export function PetScreen({ onPetTap, onPetLongPress, onHeartTap, onStarTap, onW
               aria-label={friendProfile.ui.secretPixelAria}
               title={friendProfile.ui.secretPixelTitle}
             />
+
+            {/* gizli kitap — hikâye gizlisi bulununca belirir (tekrar dinlemek + final kapağı) */}
+            {save.eggsFound.includes('story') && (
+              <motion.button
+                type="button"
+                onClick={onStoryTap}
+                className="absolute bottom-1.5 left-1.5 z-30 grid h-6 w-6 cursor-pointer place-items-center rounded-md bg-[#3b3160] text-[11px] opacity-70 transition-all hover:scale-125 hover:opacity-100"
+                animate={{ scale: [1, 1.12, 1] }}
+                transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+                aria-label={friendProfile.story.entryAria}
+                title={friendProfile.story.entryTitle}
+              >
+                📖
+              </motion.button>
+            )}
 
             {/* night overlay */}
             <SleepOverlay onWake={onWake} />
