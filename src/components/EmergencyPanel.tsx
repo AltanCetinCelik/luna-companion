@@ -9,7 +9,7 @@ interface EmergencyPanelProps {
 }
 
 /**
- * ACİL MODU — Aybike sıkılınca tek dokunuşla seni arasın.
+ * ACİL MODU — dost sıkılınca tek dokunuşla seni arasın.
  * - tel: linki mobilde arama ekranını numaranla hazır açar (yeşil tuşa basınca arar)
  * - WhatsApp seçeneği hazır mesajla sohbet açar
  * Tarayıcılar otomatik aramaya izin vermez; bu, buna en yakın ve en güvenli yol.

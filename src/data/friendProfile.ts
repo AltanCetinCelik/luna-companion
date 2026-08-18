@@ -32,8 +32,8 @@
  *  Yer tutucular: bazı yazılarda {ad}, {skor}, {eylem}, {kalan} gibi
  *  süslü parantezler var — bunlar otomatik doldurulur, silme.
  *
- *  Fotoğraflar: dosyaları /public/photos/ klasörüne at (örn. `aybike.jpg`)
- *  ve aşağıda bir anıya `image: '/photos/aybike.jpg'` ekle. Fotoğrafı
+ *  Fotoğraflar: dosyaları /public/photos/ klasörüne at (örn. `dost.jpg`)
+ *  ve aşağıda bir anıya `image: '/photos/dost.jpg'` ekle. Fotoğrafı
  *  olmayan anılar otomatik olarak tatlı bir piksel yer tutucu gösterir.
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -85,7 +85,7 @@ export function t(template: string, vars: Record<string, string | number>): stri
 
 export const friendProfile = {
   /* ─── O kim ─────────────────────────────────────────────────────── */
-  name: 'AYBIKE', // <- onun adı (büyük harflerle güzel durur)
+  name: 'PİKSEL DOST', // <- onun adı (büyük harflerle güzel durur)
   nickname: 'Tatlış şey', // <- petin ona seslenme şekli
 
   /* ─── Kişilik (KONUŞ ekranında rastgele gösterilir) ─────────────── */
@@ -102,7 +102,7 @@ export const friendProfile = {
 
   /* ─── Ambalaj / ürün ekranı ─────────────────────────────────────── */
   product: {
-    title: 'Aybike EDİSYONU',
+    title: 'PİKSEL DOST EDİSYONU',
     subtitle: 'SANAL BEBIS',
     version: 'Sürüm 1.0',
     blurb:
@@ -539,7 +539,7 @@ export const friendProfile = {
 
   /* ─── ACİL MODU (canı sıkılınca seni arasın) ────────────────────── */
   /*
-   * Aybike butona basınca telefonunun arama ekranı senin numaranla
+   * Dost butona basınca telefonunun arama ekranı senin numaranla
    * hazır açılır — yeşil tuşa basınca seni arar (kendi telefonundan).
    *
    *  ⚠️  ÖNEMLİ: tel ve whatsappNumber alanlarına KENDİ numaranı yaz!
@@ -594,7 +594,7 @@ export const friendProfile = {
     ],
     // Tüm gizliler (8/8) bulununca: ekran kararır, kalp havai fişekleri ve bu mesaj
     allFound:
-      'Benim meraklı hanımefendim buldu mu her şeyii? Aferinn bitanemee ama gerçekteki altan özlemiştir senii',
+      'Benim meraklı hanımefendim buldu mu her şeyii? Aferinn bitanemee ama gerçekteki dost özlemiştir senii',
     allFoundCta: 'TAMAM ♥',
     secretFound: 'Gizli şey bulundu!',
   },
